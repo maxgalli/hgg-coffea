@@ -7,6 +7,7 @@ import time
 import numpy as np
 import uproot
 from coffea import processor
+from coffea.logger import get_logger
 from coffea.util import save
 
 from hgg_coffea.workflows import taggers, workflows
@@ -97,6 +98,13 @@ def get_main_parser():
         dest="samplejson",
         default="dummy_samples.json",
         help="JSON file containing dataset and file locations (default: %(default)s)",
+    )
+
+    parser.add_argument(
+        "--debug",
+        default=False,
+        action="store_true",
+        help="Print debug information with a logger"
     )
 
     # Scale out
@@ -191,6 +199,13 @@ if __name__ == "__main__":
     metaCondsPath = os.path.join(os.path.dirname(__file__), "metaconditions")
     parser = get_main_parser()
     args = parser.parse_args()
+
+    if args.debug:
+        log_level = "DEBUG"
+    else:
+        log_level = "INFO"
+    logger = get_logger(level=log_level)
+    logger.info("Start production")
 
     if args.output == parser.get_default("output"):
         args.output = f'hists_{args.workflow}_{(args.samplejson).replace("/","_").rstrip(".json")}.coffea'
@@ -467,7 +482,7 @@ if __name__ == "__main__":
         else:
             cluster.adapt(minimum=args.scaleout, maximum=args.max_scaleout)
             client = Client(cluster)
-            print("Waiting for at least one worker...")  # noqa
+            logger.info("Waiting for at least one worker...")  # noqa
             client.wait_for_workers(1)
         with performance_report(filename="dask-report.html"):
             output = processor.run_uproot_job(

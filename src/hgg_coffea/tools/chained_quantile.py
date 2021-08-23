@@ -5,6 +5,9 @@ import awkward
 import numpy
 import xgboost
 
+import logging
+logger = logging.getLogger(__name__)
+
 
 class wrapped_xgb:
     def __init__(
