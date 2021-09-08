@@ -34,9 +34,24 @@
 
     "flashggPhotons" :
     {
-        "photonIdMVAweightfile_EB" : "flashgg/MicroAOD/data/PhoID_barrel_UL2017_GJetMC_SATrain_nTree2k_LR_0p1_13052020_BDTG.weights.xml",
-        "photonIdMVAweightfile_EE" : "flashgg/MicroAOD/data/PhoID_endcap_UL2017_GJetMC_SATrain_nTree2k_LR_0p1_13052020_BDTG.weights.xml",
+        "photonIdMVAweightfile_EB" : "/work/gallim/devel/HiggsDNA_studies/tmva-to-xgboost/2017_weights/UL17_eb.json",
+        "photonIdMVAweightfile_EE" : "/work/gallim/devel/HiggsDNA_studies/tmva-to-xgboost/2017_weights/UL17_ee.json",
         "effAreasConfigFile" : "RecoEgamma/PhotonIdentification/data/Fall17/effAreaPhotons_cone03_pfPhotons_90percentBased_TrueVtx.txt",
+        "inputs": 
+        [
+            "energyRaw", 
+            "r9", 
+            "sieie", 
+            "etaWidth", 
+            "phiWidth", 
+            "sieip", 
+            "s4", 
+            "pfPhoIso03", 
+            "pfChargedIsoPFPV", 
+            "pfChargedIsoWorstVtx", 
+            "eta",
+            "fixedGridRhoAll" 
+        ],
         "is2017" : true
     },
 

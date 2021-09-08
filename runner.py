@@ -457,13 +457,13 @@ if __name__ == "__main__":
             )
         elif "slurm" in args.executor:
             cluster = SLURMCluster(
-                queue="all",
+                #queue="all",
                 cores=args.workers,
                 processes=args.workers,
                 memory="200 GB",
-                retries=10,
-                walltime="00:30:00",
-                env_extra=env_extra,
+                #retries=10,
+                #walltime="00:30:00",
+                #env_extra=env_extra,
             )
         elif "condor" in args.executor:
             cluster = HTCondorCluster(
@@ -503,4 +503,4 @@ if __name__ == "__main__":
     save(output, args.output)
 
     print(output)  # noqa
-    print(f"Saving output to {args.output}")  # noqa
+    logger.info(f"Saving output to {args.output}")  # noqa

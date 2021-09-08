@@ -19,6 +19,8 @@ from hgg_coffea.tools.diphoton_mva import (  # isort:skip
     load_diphoton_mva,
 )
 
+from hgg_coffea.tools.photonid_mva import calculate_photonid_mva, load_photonid_mva
+
 
 vector.register_awkward()
 
@@ -68,6 +70,14 @@ class HggBaseProcessor(processor.ProcessorABC):  # type: ignore
         except Exception as e:
             warnings.warn(f"Could not instantiate ChainedQuantileRegression: {e}")
             self.chained_quantile = None
+
+        # initialize photonid_mva
+        self.photonid_mva_EB = load_photonid_mva(
+            self.meta["flashggPhotons"]["photonIdMVAweightfile_EB"]
+        )
+        self.photonid_mva_EE = load_photonid_mva(
+            self.meta["flashggPhotons"]["photonIdMVAweightfile_EE"]
+        )
 
         # initialize diphoton mva
         self.diphoton_mva = load_diphoton_mva(
@@ -201,6 +211,9 @@ class HggBaseProcessor(processor.ProcessorABC):  # type: ignore
         # the previous sort assures the order
         diphotons = diphotons[diphotons["pho_lead"].pt > self.min_pt_lead_photon]
 
+        # recompute photonid_mva on the fly
+        diphotons = self.add_photonid_mva(diphotons, events)
+
         # now turn the diphotons into candidates with four momenta and such
         diphoton_4mom = diphotons["pho_lead"] + diphotons["pho_sublead"]
         diphotons["pt"] = diphoton_4mom.pt
@@ -288,3 +301,19 @@ class HggBaseProcessor(processor.ProcessorABC):  # type: ignore
             diphotons,
             events,
         )
+
+    def add_photonid_mva(self, diphotons: awkward.Array, events: awkward.Array) -> awkward.Array:
+        # https://awkward-array.readthedocs.io/en/latest/_auto/ak.Array.html#ak-array-setitem
+        diphotons["pho_lead", "fixedGridRhoAll"]  = events.fixedGridRhoAll * awkward.ones_like(diphotons["pho_lead"].pt)
+        diphotons["pho_sublead", "fixedGridRhoAll"] = events.fixedGridRhoAll * awkward.ones_like(diphotons["pho_sublead"].pt)
+
+        diphotons["pho_lead"] = calculate_photonid_mva(
+            (self.photonid_mva_EB, self.meta["flashggPhotons"]["inputs"]),
+            diphotons["pho_lead"]
+        )
+        diphotons["pho_sublead"] = calculate_photonid_mva(
+            (self.photonid_mva_EB, self.meta["flashggPhotons"]["inputs"]),
+            diphotons["pho_sublead"]
+        )
+
+        return diphotons
