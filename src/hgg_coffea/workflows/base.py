@@ -310,14 +310,22 @@ class HggBaseProcessor(processor.ProcessorABC):  # type: ignore
             events,
         )
 
-
-    def add_photonid_mva(self, photons: awkward.Array, events: awkward.Array) -> awkward.Array:
-        # https://awkward-array.readthedocs.io/en/latest/_auto/ak.Array.html#ak-array-setitem
-        photons["fixedGridRhoAll"]  = events.fixedGridRhoAll * awkward.ones_like(photons.pt)
-
-        photons = calculate_photonid_mva(
-            (self.photonid_mva_EB, self.meta["flashggPhotons"]["inputs"]),
-            photons
+    def add_photonid_mva(
+        self, photons: awkward.Array, events: awkward.Array
+    ) -> awkward.Array:
+        photons["fixedGridRhoAll"] = events.fixedGridRhoAll * awkward.ones_like(
+            photons.pt
         )
+        counts = awkward.num(photons, axis=-1)
+        photons = awkward.flatten(photons)
+        isEB = awkward.to_numpy(numpy.abs(photons.eta) < 1.5)
+        mva_EB = calculate_photonid_mva(
+            (self.photonid_mva_EB, self.meta["flashggPhotons"]["inputs_EB"]), photons
+        )
+        mva_EE = calculate_photonid_mva(
+            (self.photonid_mva_EE, self.meta["flashggPhotons"]["inputs_EE"]), photons
+        )
+        mva = awkward.where(isEB, mva_EB, mva_EE)
+        photons["mvaID"] = mva
 
-        return photons
+        return awkward.unflatten(photons, counts)
