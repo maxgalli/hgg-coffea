@@ -7,6 +7,7 @@ from hgg_coffea.tools.xgb_loader import load_bdt
 @pytest.mark.parametrize(
     "fname",
     [
+        "tests/samples/altDiphoModel_coffea.json.xz",
         "tests/samples/altDiphoModel_coffea.json.gz",
         "tests/samples/altDiphoModel_coffea.json",
         "DoesNotExist",

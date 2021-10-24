@@ -1,4 +1,5 @@
 import gzip
+import lzma
 import warnings
 from typing import Optional
 
@@ -9,7 +10,14 @@ def _get_gzip(fname: str) -> bytearray:
     return bytearray(gzip.open(fname, "rb").read())
 
 
-_magics = {b"\x1f\x8b": _get_gzip}
+def _get_lzma(fname: str) -> bytearray:
+    return bytearray(lzma.open(fname, "rb").read())
+
+
+_magics = {
+    b"\x1f\x8b": _get_gzip,
+    b"\xfd7": _get_lzma,
+}
 
 
 def load_bdt(fname: str) -> Optional[xgboost.Booster]:
