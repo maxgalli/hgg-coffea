@@ -5,7 +5,7 @@ import awkward
 import numpy
 import xgboost
 
-from hgg_coffea.tools.bdt_loader import load_bdt
+from hgg_coffea.tools.xgb_loader import load_bdt
 
 
 class wrapped_xgb:
