@@ -6,11 +6,11 @@ def test_version():
 
 
 def test_tools_subpackage():
-    from hgg_coffea.tools import chained_quantile
-    from hgg_coffea.tools import diphoton_mva
-    from hgg_coffea.tools import xgb_loader
+    from hgg_coffea.tools import chained_quantile  # noqa
+    from hgg_coffea.tools import diphoton_mva  # noqa
+    from hgg_coffea.tools import xgb_loader  # noqa
 
 
 def test_workflows_subpackage():
-    from hgg_coffea.workflows import dystudies
-    from hgg_coffea.workflows import base
+    from hgg_coffea.workflows import base  # noqa
+    from hgg_coffea.workflows import dystudies  # noqa
