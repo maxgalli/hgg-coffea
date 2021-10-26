@@ -32,7 +32,7 @@ def calculate_photonid_mva(
     photonid_mva, var_order = mva
 
     if photonid_mva is None:
-        return awkward.ones_like(photon)
+        return awkward.ones_like(photon.pt)
 
     bdt_inputs = {}
     bdt_inputs = numpy.column_stack(
