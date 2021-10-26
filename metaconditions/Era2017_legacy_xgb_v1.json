@@ -34,8 +34,40 @@
 
     "flashggPhotons" :
     {
-        "photonIdMVAweightfile_EB" : "flashgg/MicroAOD/data/PhoID_barrel_UL2017_GJetMC_SATrain_nTree2k_LR_0p1_13052020_BDTG.weights.xml",
-        "photonIdMVAweightfile_EE" : "flashgg/MicroAOD/data/PhoID_endcap_UL2017_GJetMC_SATrain_nTree2k_LR_0p1_13052020_BDTG.weights.xml",
+        "photonIdMVAweightfile_EB" : "aux-data/MicroAOD/data/bdt_original_classifier_UL17_barrel.json",
+        "photonIdMVAweightfile_EE" : "aux-data/MicroAOD/data/bdt_original_classifier_UL17_endcap.json",
+        "inputs_EB":
+        [
+            "energyRaw",
+            "r9",
+            "sieie",
+            "etaWidth",
+            "phiWidth",
+            "sieip",
+            "s4",
+            "pfPhoIso03",
+            "pfChargedIsoPFPV",
+            "pfChargedIsoWorstVtx",
+            "eta",
+            "fixedGridRhoAll"
+        ],
+        "inputs_EE":
+        [
+            "energyRaw",
+            "r9",
+            "sieie",
+            "etaWidth",
+            "phiWidth",
+            "sieip",
+            "s4",
+            "pfPhoIso03",
+            "pfChargedIsoPFPV",
+            "pfChargedIsoWorstVtx",
+            "eta",
+            "fixedGridRhoAll",
+            "esEffSigmaRR",
+            "esEnergyOverRawE"
+        ],
         "effAreasConfigFile" : "RecoEgamma/PhotonIdentification/data/Fall17/effAreaPhotons_cone03_pfPhotons_90percentBased_TrueVtx.txt",
         "is2017" : true
     },
@@ -343,7 +375,7 @@
                             "f5 := s4",
                             "f6 := r9",
                             "f7 := phiWidth",
-                            "f8 := sieip",
+                            "f8 := sieie",
                             "f9 := etaWidth"
                            ]
     },

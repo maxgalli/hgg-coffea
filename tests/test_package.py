@@ -8,6 +8,7 @@ def test_version():
 def test_tools_subpackage():
     from hgg_coffea.tools import chained_quantile  # noqa
     from hgg_coffea.tools import diphoton_mva  # noqa
+    from hgg_coffea.tools import photonid_mva  # noqa
     from hgg_coffea.tools import xgb_loader  # noqa
 
 

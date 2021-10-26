@@ -14,6 +14,7 @@ from coffea import processor
 
 from hgg_coffea.tools.chained_quantile import ChainedQuantileRegression
 from hgg_coffea.tools.diphoton_mva import calculate_diphoton_mva
+from hgg_coffea.tools.photonid_mva import calculate_photonid_mva
 from hgg_coffea.tools.xgb_loader import load_bdt
 
 vector.register_awkward()
@@ -64,6 +65,14 @@ class HggBaseProcessor(processor.ProcessorABC):  # type: ignore
         except Exception as e:
             warnings.warn(f"Could not instantiate ChainedQuantileRegression: {e}")
             self.chained_quantile = None
+
+        # initialize photonid_mva
+        self.photonid_mva_EB = load_bdt(
+            self.meta["flashggPhotons"]["photonIdMVAweightfile_EB"]
+        )
+        self.photonid_mva_EE = load_bdt(
+            self.meta["flashggPhotons"]["photonIdMVAweightfile_EE"]
+        )
 
         # initialize diphoton mva
         self.diphoton_mva = load_bdt(self.meta["flashggDiPhotonMVA"]["weightFile"])
@@ -186,6 +195,9 @@ class HggBaseProcessor(processor.ProcessorABC):  # type: ignore
         if self.chained_quantile is not None:
             photons = self.chained_quantile.apply(events)
 
+        # recompute photonid_mva on the fly
+        photons = self.add_photonid_mva(photons, events)
+
         # photon preselection
         photons = self.photon_preselection(photons)
         # sort photons in each event descending in pt
@@ -297,3 +309,23 @@ class HggBaseProcessor(processor.ProcessorABC):  # type: ignore
             diphotons,
             events,
         )
+
+    def add_photonid_mva(
+        self, photons: awkward.Array, events: awkward.Array
+    ) -> awkward.Array:
+        photons["fixedGridRhoAll"] = events.fixedGridRhoAll * awkward.ones_like(
+            photons.pt
+        )
+        counts = awkward.num(photons, axis=-1)
+        photons = awkward.flatten(photons)
+        isEB = awkward.to_numpy(numpy.abs(photons.eta) < 1.5)
+        mva_EB = calculate_photonid_mva(
+            (self.photonid_mva_EB, self.meta["flashggPhotons"]["inputs_EB"]), photons
+        )
+        mva_EE = calculate_photonid_mva(
+            (self.photonid_mva_EE, self.meta["flashggPhotons"]["inputs_EE"]), photons
+        )
+        mva = awkward.where(isEB, mva_EB, mva_EE)
+        photons["mvaID"] = mva
+
+        return awkward.unflatten(photons, counts)
